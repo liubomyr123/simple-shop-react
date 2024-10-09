@@ -9,7 +9,7 @@ export const products_mock: Product[] = [
     imageUrl: "https://plus.unsplash.com/premium_photo-1667621221177-a10b4fb30b08?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "mug",
     stock: 100,
-    colors: ["White", "Black", "Blue"],
+    colors: ["white", "black", "blue"],
     discount: 10,
   },
   {
@@ -20,7 +20,7 @@ export const products_mock: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1588793076577-4c2b666452d3?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "mug",
     stock: 50,
-    colors: ["Silver", "Red", "Green"],
+    colors: ["silver", "red", "green"],
     discount: 0,
   },
   {
@@ -31,7 +31,7 @@ export const products_mock: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1620767188495-98ce5155895e?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "mug",
     stock: 30,
-    colors: ["White", "Yellow", "Pink"],
+    colors: ["white", "yellow", "pink"],
     discount: 40,
   },
   {
@@ -43,7 +43,7 @@ export const products_mock: Product[] = [
     category: "t-shirt",
     stock: 75,
     sizes: ["S", "M", "L", "XL"],
-    colors: ["Black", "Navy", "Grey"],
+    colors: ["black", "navy", "grey"],
     discount: 50,
   },
   {
@@ -54,8 +54,8 @@ export const products_mock: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "t-shirt",
     stock: 80,
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["White", "Blue", "Red"],
+    sizes: ["M", "L", "XL"],
+    colors: ["white", "blue", "red"],
     discount: 0,
   },
   {
@@ -66,8 +66,8 @@ export const products_mock: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1609123100658-04923eef862e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHZpbnRhZ2UlMjBjbG90aGluZ3xlbnwwfHwwfHx8MA%3D%3D",
     category: "t-shirt",
     stock: 40,
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Green", "Black", "White"],
+    sizes: ["S", "M", "L"],
+    colors: ["green", "black", "white"],
     discount: 15,
   },
   {
@@ -79,7 +79,7 @@ export const products_mock: Product[] = [
     category: "notebook",
     stock: 200,
     sizes: ["A5", "A4"],
-    colors: ["Black", "Blue", "Red"],
+    colors: ["black", "blue", "red"],
     discount: 0,
   },
   {
@@ -91,7 +91,7 @@ export const products_mock: Product[] = [
     category: "notebook",
     stock: 150,
     sizes: ["A5", "A4"],
-    colors: ["White", "Brown"],
+    colors: ["white", "brown"],
     discount: 80,
   },
   {
@@ -103,7 +103,7 @@ export const products_mock: Product[] = [
     category: "notebook",
     stock: 120,
     sizes: ["A5", "A4"],
-    colors: ["Black", "Grey"],
+    colors: ["black", "grey"],
     discount: 0,
   },
 ];
