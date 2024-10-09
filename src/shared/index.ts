@@ -6,6 +6,7 @@ export { useTypedTranslation } from "./hooks/useTypedTranslation";
 
 /** Types */
 export type { User } from "./types/User";
+export type { Colors, Category, Sizes } from "./types/Product";
 export type { Product } from "./types/Product";
 export type { CartProduct } from "./types/CartProduct";
 export type { FavoriteProduct } from "./types/FavoriteProduct";
@@ -14,3 +15,9 @@ export type { OrderItem } from "./types/OrderItem";
 
 /** UI */
 export { default as Preloader } from "./UI/Preloader";
+
+/** Data */
+export { colors, sizes, categories } from "./types/Product";
+
+/** Helpers */
+export { prepareFilters } from "./helpers/prepareFilters";

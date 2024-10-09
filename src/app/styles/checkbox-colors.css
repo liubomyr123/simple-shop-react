@@ -1,0 +1,54 @@
+.checkbox-white[data-state="checked"] {
+    background-color: white;
+    border-color: rgb(199, 199, 199);
+}
+
+.checkbox-grey[data-state="checked"] {
+    background-color: grey !important;
+    border-color: grey !important;
+}
+
+.checkbox-brown[data-state="checked"] {
+    background-color: brown;
+    border-color: brown;
+}
+
+.checkbox-navy[data-state="checked"] {
+    background-color: navy;
+    border-color: navy;
+}
+
+.checkbox-black[data-state="checked"] {
+    background-color: black;
+    border-color: black;
+}
+
+.checkbox-blue[data-state="checked"] {
+    background-color: blue;
+    border-color: blue;
+}
+
+.checkbox-silver[data-state="checked"] {
+    background-color: silver;
+    border-color: silver;
+}
+
+.checkbox-red[data-state="checked"] {
+    background-color: red;
+    border-color: red;
+}
+
+.checkbox-green[data-state="checked"] {
+    background-color: green;
+    border-color: green;
+}
+
+.checkbox-yellow[data-state="checked"] {
+    background-color: yellow;
+    border-color: yellow;
+}
+
+.checkbox-pink[data-state="checked"] {
+    background-color: pink;
+    border-color: pink;
+}
