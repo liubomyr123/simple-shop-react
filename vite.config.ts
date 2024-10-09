@@ -24,6 +24,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      "@": root,
       "@src": root,
       "@app": appDir,
       "@api": apiDir,
