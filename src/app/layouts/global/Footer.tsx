@@ -4,8 +4,8 @@ export default function Footer (): JSX.Element {
   const t = useTypedTranslation();
 
   return (
-    <div>
+    <footer>
       <h2>{t("footer")}</h2>
-    </div>
+    </footer>
   );
 }

@@ -10,8 +10,8 @@ export default function Product (): JSX.Element {
 
   console.log(params.productId);
   return (
-    <div>
+    <main>
       <h2>Product</h2>
-    </div>
+    </main>
   );
 }

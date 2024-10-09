@@ -12,7 +12,7 @@ export default function Header (): JSX.Element {
   };
 
   return (
-    <div>
+    <header>
       <h2>{t("header")}</h2>
       <select onChange={handleChangeLanguage}>
         <option value="en">{"EN"}</option>
@@ -30,6 +30,6 @@ export default function Header (): JSX.Element {
       <button type="button" onClick={() => navigate("/profile")}>
         Profile
       </button>
-    </div>
+    </header>
   );
 }

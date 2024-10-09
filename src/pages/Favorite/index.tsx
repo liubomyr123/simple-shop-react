@@ -1,7 +1,7 @@
 export default function Favorite (): JSX.Element {
   return (
-    <div>
+    <main>
       <h2>Favorite</h2>
-    </div>
+    </main>
   );
 }

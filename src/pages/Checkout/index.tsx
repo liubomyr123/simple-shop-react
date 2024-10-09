@@ -1,7 +1,7 @@
 export default function Checkout (): JSX.Element {
   return (
-    <div>
+    <main>
       <h2>Checkout</h2>
-    </div>
+    </main>
   );
 }

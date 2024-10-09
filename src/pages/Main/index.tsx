@@ -23,7 +23,7 @@ export default function Main (): JSX.Element {
   console.log(products);
 
   return (
-    <div>
+    <main>
       {!products.length
         ? <>Loading</>
         : <div>
@@ -53,6 +53,6 @@ export default function Main (): JSX.Element {
           </Accordion>
         </div>
       }
-    </div>
+    </main>
   );
 }
