@@ -10,7 +10,7 @@ export default function Product (): JSX.Element {
 
   console.log(params.productId);
   return (
-    <main>
+    <main className="flex w-10/12 m-auto">
       <h2>Product</h2>
     </main>
   );

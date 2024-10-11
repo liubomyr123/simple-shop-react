@@ -21,7 +21,7 @@ export default function Main (): JSX.Element {
     return <>Loading...</>;
   }
   return (
-    <main>
+    <main className="flex w-10/12 m-auto pt-2">
       <MainFilters products={products} />
     </main>
   );
