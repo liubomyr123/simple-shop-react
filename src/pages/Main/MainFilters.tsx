@@ -136,12 +136,13 @@ export default function MainFilters ({ products }: MainFiltersProps): JSX.Elemen
                 <label id={id} key={id} className="flex gap-2 items-center justify-between cursor-pointer">
                   <div className="flex justify-center items-center gap-2">
                     <Checkbox
-                      iconColor={iconColorMap[id]}
+                      // iconColor={iconColorMap[id]}
                       id={id}
                       checked={!!checkedColors[id]}
                       onCheckedChange={() => handleCheckboxColorChange(id)}
-                      className={`checkbox-${id} data-[state=unchecked]:bg-white`}
+                      // className={`checkbox-${id} data-[state=unchecked]:bg-white`}
                     />
+                    <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: id, border: "1px dashed grey" }}></div>
                     <span>{id}</span>
                   </div>
                   <span>({amount})</span>
