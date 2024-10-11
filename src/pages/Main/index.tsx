@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@store";
 import { useEffect } from "react";
 
 import MainFilters from "./MainFilters";
+import ListOfProducts from "./ListOfProducts";
 
 export default function Main (): JSX.Element {
   const { products } = useAppSelector((state) => state.products);
@@ -23,6 +24,7 @@ export default function Main (): JSX.Element {
   return (
     <main className="flex w-10/12 m-auto pt-2">
       <MainFilters products={products} />
+      <ListOfProducts products={products} />
     </main>
   );
 }
