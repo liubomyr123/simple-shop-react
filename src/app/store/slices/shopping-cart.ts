@@ -37,7 +37,7 @@ const shoppingCartSlice = createSlice({
       if (existingItem) {
         // skip
       } else {
-        state.cartItems.push({ ...product, quantity });
+        state.cartItems.push({ ...product, quantity, selectedSize: product.sizes?.[0], selectedColor: product.colors?.[0] });
       }
     },
     removeProductFromCart (

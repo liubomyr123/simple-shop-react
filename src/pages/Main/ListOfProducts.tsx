@@ -1,4 +1,5 @@
-import { webp, type Product } from "@shared";
+import { webp } from "@shared";
+import type { Category, Product } from "@shared";
 import { useMemo, useState } from "react";
 
 import {
@@ -9,12 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAppDispatch } from "@store";
+import { addProductToCart } from "@app/store/slices/shopping-cart";
+import { addProductToFavorite, removeProductFromFavorite } from "@app/store/slices/favorite-cart";
 
 interface MainFiltersProps {
   products: Product[];
 }
 
-function sortProductsOnStock(arr: Product[]): Product[] {
+function sortProductsOnStock (arr: Product[]): Product[] {
   const sortedArray: Product[] = [];
   const nonZeroArray: Product[] = [];
 
@@ -31,13 +35,23 @@ function sortProductsOnStock(arr: Product[]): Product[] {
 
 export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Element {
   const [listFormat, setListFormat] = useState<("list" | "tabs")>("tabs");
+  const dispatch = useAppDispatch();
 
   const sortedProducts = useMemo(() => {
     return sortProductsOnStock(products);
   }, [products]);
 
-  function handleChangeSort(sortType: string): void {
+  function handleChangeSort (sortType: string): void {
     console.log("sortType:", sortType);
+  }
+  function addToCart (product: Product): void {
+    dispatch(addProductToCart({ product }));
+  }
+  function addToFavorites (product: Product): void {
+    dispatch(addProductToFavorite({ product }));
+  }
+  function removeFromFavorites (product: Product): void {
+    dispatch(removeProductFromFavorite({ productId: product.id }));
   }
   return (
     <section className="w-full bg-green-0 p-3">
@@ -89,7 +103,11 @@ export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Ele
         {sortedProducts.map((product) => {
           if (listFormat === "list") {
             return (
-              <ListFormatProduct key={product.id} product={product} />
+              <ListFormatProduct key={product.id} product={product}
+                addToCart={addToCart}
+                addToFavorites={addToFavorites}
+                removeFromFavorites={removeFromFavorites}
+              />
             );
           }
           return null;
@@ -99,7 +117,11 @@ export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Ele
         {sortedProducts.map((product) => {
           if (listFormat === "tabs") {
             return (
-              <TabFormatProduct key={product.id} product={product} />
+              <TabFormatProduct key={product.id} product={product}
+                addToCart={addToCart}
+                addToFavorites={addToFavorites}
+                removeFromFavorites={removeFromFavorites}
+              />
             );
           }
           return null;
@@ -111,11 +133,14 @@ export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Ele
 
 interface ProductFormatProps {
   product: Product;
+  addToCart: (product: Product) => void;
+  addToFavorites: (product: Product) => void;
+  removeFromFavorites: (product: Product) => void;
 }
 
-function TabFormatProduct ({ product }: ProductFormatProps): JSX.Element {
+export function TabFormatProduct ({ product, addToCart, addToFavorites, removeFromFavorites }: ProductFormatProps): JSX.Element {
   const discountPrice = (product.price * (100 - product.discount) / 100).toFixed(2);
-  const imageMap: Record<typeof product["category"], string> = {
+  const imageMap: Record<Category, string> = {
     mug: webp.CoffeeMug,
     notebook: webp.professional_notebook,
     "t-shirt": webp.t_shirt,
@@ -161,6 +186,7 @@ function TabFormatProduct ({ product }: ProductFormatProps): JSX.Element {
           style={{
             cursor: product.stock === 0 ? "default" : "pointer",
           }}
+          onClick={() => addToCart(product)}
         >
           Add to cart
         </div>
@@ -193,9 +219,9 @@ function TabFormatProduct ({ product }: ProductFormatProps): JSX.Element {
   );
 }
 
-function ListFormatProduct ({ product }: ProductFormatProps): JSX.Element {
+export function ListFormatProduct ({ product }: ProductFormatProps): JSX.Element {
   const discountPrice = (product.price * (100 - product.discount) / 100).toFixed(2);
-  const imageMap: Record<typeof product["category"], string> = {
+  const imageMap: Record<Category, string> = {
     mug: webp.CoffeeMug,
     notebook: webp.professional_notebook,
     "t-shirt": webp.t_shirt,
@@ -209,7 +235,7 @@ function ListFormatProduct ({ product }: ProductFormatProps): JSX.Element {
           pointerEvents: product.stock === 0 ? "none" : "all",
         }}
       >
-        <figure className="min-h-40 flex justify-center items-center p-2">
+        <figure className="min-h-40 flex justify-center items-center p-2 pl-3">
           <img
             src={imageMap[product.category]}
             alt={product.name} className="w-24"
