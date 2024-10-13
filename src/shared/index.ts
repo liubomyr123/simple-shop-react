@@ -1,4 +1,12 @@
 /** Assets */
+import CoffeeMug from "./assets/webp/CoffeeMug-JetBlack-Front.webp";
+import professional_notebook from "./assets/webp/professional_notebook.webp";
+import t_shirt from "./assets/webp/t-shirt.webp";
+export const webp = {
+  CoffeeMug,
+  professional_notebook,
+  t_shirt,
+};
 
 /** Hooks */
 export { useTypedNavigate } from "./hooks/useTypedNavigate";

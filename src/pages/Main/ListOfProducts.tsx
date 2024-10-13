@@ -1,4 +1,4 @@
-import type { Product } from "@shared";
+import { webp, type Product } from "@shared";
 import { useMemo, useState } from "react";
 
 import {
@@ -14,7 +14,7 @@ interface MainFiltersProps {
   products: Product[];
 }
 
-function sortProductsOnStock (arr: Product[]): Product[] {
+function sortProductsOnStock(arr: Product[]): Product[] {
   const sortedArray: Product[] = [];
   const nonZeroArray: Product[] = [];
 
@@ -36,7 +36,7 @@ export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Ele
     return sortProductsOnStock(products);
   }, [products]);
 
-  function handleChangeSort (sortType: string): void {
+  function handleChangeSort(sortType: string): void {
     console.log("sortType:", sortType);
   }
   return (
@@ -115,6 +115,11 @@ interface ProductFormatProps {
 
 function TabFormatProduct ({ product }: ProductFormatProps): JSX.Element {
   const discountPrice = (product.price * (100 - product.discount) / 100).toFixed(2);
+  const imageMap: Record<typeof product["category"], string> = {
+    mug: webp.CoffeeMug,
+    notebook: webp.professional_notebook,
+    "t-shirt": webp.t_shirt,
+  };
 
   return (
     <div className="relative">
@@ -127,7 +132,7 @@ function TabFormatProduct ({ product }: ProductFormatProps): JSX.Element {
         <figure className="flex justify-center items-center p-1">
           <img
             className="h-[250px] object-cover"
-            src={product.imageUrl}
+            src={imageMap[product.category]}
             alt={product.name}
           />
         </figure>
@@ -190,6 +195,11 @@ function TabFormatProduct ({ product }: ProductFormatProps): JSX.Element {
 
 function ListFormatProduct ({ product }: ProductFormatProps): JSX.Element {
   const discountPrice = (product.price * (100 - product.discount) / 100).toFixed(2);
+  const imageMap: Record<typeof product["category"], string> = {
+    mug: webp.CoffeeMug,
+    notebook: webp.professional_notebook,
+    "t-shirt": webp.t_shirt,
+  };
 
   return (
     <div className="relative">
@@ -200,7 +210,10 @@ function ListFormatProduct ({ product }: ProductFormatProps): JSX.Element {
         }}
       >
         <figure className="min-h-40 flex justify-center items-center p-2">
-          <img src={product.imageUrl} alt={product.name} className="w-24" />
+          <img
+            src={imageMap[product.category]}
+            alt={product.name} className="w-24"
+          />
         </figure>
         <div className="flex flex-col p-2">
           <header>
