@@ -1,6 +1,7 @@
 import { webp } from "@shared";
 import type { Category, Product } from "@shared";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import {
   Select,
@@ -10,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAppDispatch } from "@store";
+import { useAppDispatch, useAppSelector } from "@store";
 import { addProductToCart } from "@app/store/slices/shopping-cart";
 import { addProductToFavorite, removeProductFromFavorite } from "@app/store/slices/favorite-cart";
 
@@ -46,12 +47,15 @@ export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Ele
   }
   function addToCart (product: Product): void {
     dispatch(addProductToCart({ product }));
+    toast("Product added to shopping cart");
   }
   function addToFavorites (product: Product): void {
     dispatch(addProductToFavorite({ product }));
+    toast("Product added to favorites");
   }
   function removeFromFavorites (product: Product): void {
     dispatch(removeProductFromFavorite({ productId: product.id }));
+    toast("Product removed from favorites");
   }
   return (
     <section className="w-full bg-green-0 p-3">
@@ -145,7 +149,17 @@ export function TabFormatProduct ({ product, addToCart, addToFavorites, removeFr
     notebook: webp.professional_notebook,
     "t-shirt": webp.t_shirt,
   };
+  const { favoriteItems } = useAppSelector((state) => state.favoriteCart);
 
+  const currentFavorite = favoriteItems.find(({ id }) => product.id === id);
+
+  function toggleFavorite (): void {
+    if (!currentFavorite) {
+      addToFavorites(product);
+      return;
+    }
+    removeFromFavorites(product);
+  }
   return (
     <div className="relative">
       <article className="border-gray-200 border-2 rounded-sm w-64 relative shadow-custom p-2"
@@ -195,16 +209,13 @@ export function TabFormatProduct ({ product, addToCart, addToFavorites, removeFr
             cursor: product.stock === 0 ? "default" : "pointer",
           }}
         >
-          <svg width="20px" height="20px" viewBox="0 -2.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-            <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-              <g id="Dribbble-Light-Preview" transform="translate(-99.000000, -362.000000)" fill="#000">
-                <g id="icons" transform="translate(56.000000, 160.000000)">
-                  <path d="M55.5929644,215.348992 C55.0175653,215.814817 54.2783665,216.071721 53.5108177,216.071721 C52.7443189,216.071721 52.0030201,215.815817 51.4045211,215.334997 C47.6308271,212.307129 45.2284309,210.70073 45.1034811,207.405962 C44.9722313,203.919267 48.9832249,202.644743 51.442321,205.509672 C51.9400202,206.088455 52.687619,206.420331 53.4940177,206.420331 C54.3077664,206.420331 55.0606152,206.084457 55.5593644,205.498676 C57.9649106,202.67973 62.083004,203.880281 61.8950543,207.507924 C61.7270546,210.734717 59.2322586,212.401094 55.5929644,215.348992 M53.9066671,204.31012 C53.8037672,204.431075 53.6483675,204.492052 53.4940177,204.492052 C53.342818,204.492052 53.1926682,204.433074 53.0918684,204.316118 C49.3717243,199.982739 42.8029348,202.140932 43.0045345,207.472937 C43.1651842,211.71635 46.3235792,213.819564 50.0426732,216.803448 C51.0370217,217.601149 52.2739197,218 53.5108177,218 C54.7508657,218 55.9898637,217.59915 56.9821122,216.795451 C60.6602563,213.815565 63.7787513,211.726346 63.991901,207.59889 C64.2754005,202.147929 57.6173611,199.958748 53.9066671,204.31012"
-                    id="love-[#000]">
-                  </path>
-                </g>
-              </g>
-            </g>
+          <svg
+            onClick={toggleFavorite}
+            width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path opacity={!currentFavorite ? "0" : "1"} d="M4.3314 12.0474L12 20L19.6686 12.0474C20.5211 11.1633 21 9.96429 21 8.71405C21 6.11055 18.9648 4 16.4543 4C15.2487 4 14.0925 4.49666 13.24 5.38071L12 6.66667L10.76 5.38071C9.90749 4.49666 8.75128 4 7.54569 4C5.03517 4 3 6.11055 3 8.71405C3 9.96429 3.47892 11.1633 4.3314 12.0474Z"
+              fill="#000000"/>
+            <path d="M4.3314 12.0474L12 20L19.6686 12.0474C20.5211 11.1633 21 9.96429 21 8.71405C21 6.11055 18.9648 4 16.4543 4C15.2487 4 14.0925 4.49666 13.24 5.38071L12 6.66667L10.76 5.38071C9.90749 4.49666 8.75128 4 7.54569 4C5.03517 4 3 6.11055 3 8.71405C3 9.96429 3.47892 11.1633 4.3314 12.0474Z"
+              stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </article>
@@ -219,7 +230,7 @@ export function TabFormatProduct ({ product, addToCart, addToFavorites, removeFr
   );
 }
 
-export function ListFormatProduct ({ product }: ProductFormatProps): JSX.Element {
+export function ListFormatProduct ({ product, addToFavorites, addToCart, removeFromFavorites }: ProductFormatProps): JSX.Element {
   const discountPrice = (product.price * (100 - product.discount) / 100).toFixed(2);
   const imageMap: Record<Category, string> = {
     mug: webp.CoffeeMug,
@@ -227,6 +238,17 @@ export function ListFormatProduct ({ product }: ProductFormatProps): JSX.Element
     "t-shirt": webp.t_shirt,
   };
 
+  const { favoriteItems } = useAppSelector((state) => state.favoriteCart);
+
+  const currentFavorite = favoriteItems.find(({ id }) => product.id === id);
+
+  function toggleFavorite (): void {
+    if (!currentFavorite) {
+      addToFavorites(product);
+      return;
+    }
+    removeFromFavorites(product);
+  }
   return (
     <div className="relative">
       <article className="border-gray-200 border-2 rounded-sm flex relative shadow-custom"
@@ -268,6 +290,7 @@ export function ListFormatProduct ({ product }: ProductFormatProps): JSX.Element
           style={{
             cursor: product.stock === 0 ? "default" : "pointer",
           }}
+          onClick={() => addToCart(product)}
         >
           Add to cart
         </div>
@@ -276,16 +299,13 @@ export function ListFormatProduct ({ product }: ProductFormatProps): JSX.Element
             cursor: product.stock === 0 ? "default" : "pointer",
           }}
         >
-          <svg width="20px" height="20px" viewBox="0 -2.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-            <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-              <g id="Dribbble-Light-Preview" transform="translate(-99.000000, -362.000000)" fill="#000000">
-                <g id="icons" transform="translate(56.000000, 160.000000)">
-                  <path d="M55.5929644,215.348992 C55.0175653,215.814817 54.2783665,216.071721 53.5108177,216.071721 C52.7443189,216.071721 52.0030201,215.815817 51.4045211,215.334997 C47.6308271,212.307129 45.2284309,210.70073 45.1034811,207.405962 C44.9722313,203.919267 48.9832249,202.644743 51.442321,205.509672 C51.9400202,206.088455 52.687619,206.420331 53.4940177,206.420331 C54.3077664,206.420331 55.0606152,206.084457 55.5593644,205.498676 C57.9649106,202.67973 62.083004,203.880281 61.8950543,207.507924 C61.7270546,210.734717 59.2322586,212.401094 55.5929644,215.348992 M53.9066671,204.31012 C53.8037672,204.431075 53.6483675,204.492052 53.4940177,204.492052 C53.342818,204.492052 53.1926682,204.433074 53.0918684,204.316118 C49.3717243,199.982739 42.8029348,202.140932 43.0045345,207.472937 C43.1651842,211.71635 46.3235792,213.819564 50.0426732,216.803448 C51.0370217,217.601149 52.2739197,218 53.5108177,218 C54.7508657,218 55.9898637,217.59915 56.9821122,216.795451 C60.6602563,213.815565 63.7787513,211.726346 63.991901,207.59889 C64.2754005,202.147929 57.6173611,199.958748 53.9066671,204.31012"
-                    id="love-[#1489]">
-                  </path>
-                </g>
-              </g>
-            </g>
+          <svg
+            onClick={toggleFavorite}
+            width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path opacity={!currentFavorite ? "0" : "1"} d="M4.3314 12.0474L12 20L19.6686 12.0474C20.5211 11.1633 21 9.96429 21 8.71405C21 6.11055 18.9648 4 16.4543 4C15.2487 4 14.0925 4.49666 13.24 5.38071L12 6.66667L10.76 5.38071C9.90749 4.49666 8.75128 4 7.54569 4C5.03517 4 3 6.11055 3 8.71405C3 9.96429 3.47892 11.1633 4.3314 12.0474Z"
+              fill="#000000"/>
+            <path d="M4.3314 12.0474L12 20L19.6686 12.0474C20.5211 11.1633 21 9.96429 21 8.71405C21 6.11055 18.9648 4 16.4543 4C15.2487 4 14.0925 4.49666 13.24 5.38071L12 6.66667L10.76 5.38071C9.90749 4.49666 8.75128 4 7.54569 4C5.03517 4 3 6.11055 3 8.71405C3 9.96429 3.47892 11.1633 4.3314 12.0474Z"
+              stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </article>

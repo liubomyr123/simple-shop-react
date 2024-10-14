@@ -35,9 +35,22 @@ const shoppingCartSlice = createSlice({
         (item) => item.id === product.id,
       );
       if (existingItem) {
-        // skip
+        state.cartItems = state.cartItems.map((item) => {
+          if (item.id === product.id) {
+            return {
+              ...product,
+              quantity: item.quantity + 1,
+            };
+          }
+          return item;
+        });
       } else {
-        state.cartItems.push({ ...product, quantity, selectedSize: product.sizes?.[0], selectedColor: product.colors?.[0] });
+        state.cartItems.push({
+          ...product,
+          quantity,
+          selectedSize: product.sizes?.[0],
+          selectedColor: product.colors?.[0],
+        });
       }
     },
     removeProductFromCart (
@@ -66,9 +79,18 @@ const shoppingCartSlice = createSlice({
       if (!existingItem) {
         // skip
       } else {
+        if ([-1, 0].includes(existingItem.quantity + quantity)) {
+          return;
+        }
+        if ((existingItem.quantity + quantity - 1) === existingItem.stock) {
+          return;
+        }
         state.cartItems = state.cartItems.map((item) => {
           if (item.id === productId) {
-            return { ...item, quantity };
+            return {
+              ...item,
+              quantity: item.quantity + quantity,
+            };
           }
           return item;
         });
@@ -80,5 +102,10 @@ const shoppingCartSlice = createSlice({
   },
 });
 
-export const { addProductToCart, clearCart, removeProductFromCart, updateQuantity } = shoppingCartSlice.actions;
+export const {
+  addProductToCart,
+  clearCart,
+  removeProductFromCart,
+  updateQuantity,
+} = shoppingCartSlice.actions;
 export default shoppingCartSlice.reducer;
