@@ -54,6 +54,7 @@ export default function ShoppingCart (): JSX.Element {
       subTotal += subPrice;
     }
     setSubTotal(subTotal);
+    setGrandTotal(subGrandTotal);
   }, [cartItems]);
 
   function processedToCheckout (): void {

@@ -24,7 +24,7 @@ export const Routing = (): JSX.Element => {
         </Route>
         <Route path="cart" element={<ShoppingCart />} />
         <Route path="favorite" element={<Favorite />} />
-        <Route path="checkout" element={<Checkout />} />
+        {/* <Route path="checkout" element={<Checkout />} /> */}
         <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />

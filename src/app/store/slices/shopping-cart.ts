@@ -40,6 +40,8 @@ const shoppingCartSlice = createSlice({
             return {
               ...product,
               quantity: item.quantity + 1,
+              // selectedSize: product.sizes?.[0],
+              // selectedColor: product.colors?.[0],
             };
           }
           return item;

@@ -1,5 +1,6 @@
 import { removeProductFromFavorite } from "@/app/store/slices/favorite-cart";
-import type { Category, FavoriteProduct as FavoriteProductType } from "@shared";
+import { addProductToCart } from "@/app/store/slices/shopping-cart";
+import type { Category, FavoriteProduct as FavoriteProductType, Product } from "@shared";
 import { webp } from "@shared";
 import { useAppDispatch, useAppSelector } from "@store";
 import { toast } from "sonner";
@@ -44,12 +45,21 @@ export function FavoriteProduct ({ product }: FavoriteProductProps): JSX.Element
     "t-shirt": webp.t_shirt,
   };
   const dispatch = useAppDispatch();
+  const { cartItems } = useAppSelector((state) => state.shoppingCart);
 
   function removeFromFavorites (product: FavoriteProductType): void {
     dispatch(removeProductFromFavorite({ productId: product.id }));
     toast("Product removed from favorites");
   }
   const isOutOfStock = product.stock === 0;
+  function addToCart (product: Product): void {
+    if (cartItems.find(({ id }) => product.id === id)) {
+      toast("Product already in shopping cart");
+      return;
+    }
+    dispatch(addProductToCart({ product }));
+    toast("Product added to shopping cart");
+  }
   return (
     <div className="relative">
       <article className="border-gray-200 border-2 rounded-sm w-64 relative shadow-custom p-2"
@@ -86,6 +96,14 @@ export function FavoriteProduct ({ product }: FavoriteProductProps): JSX.Element
             : null
           }
         </footer>
+        <div className={"absolute bottom-2 right-2 bg-black text-white p-1 px-2 text-[12px] rounded-sm"}
+          style={{
+            cursor: product.stock === 0 ? "default" : "pointer",
+          }}
+          onClick={() => addToCart(product)}
+        >
+          Add to cart
+        </div>
         <div className={"absolute top-3 right-4 bg-white p-2 text-[13px] rounded-full shadow-custom"}
           style={{
             cursor: isOutOfStock ? "default" : "pointer",
