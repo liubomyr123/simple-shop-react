@@ -19,7 +19,7 @@ export default function Header (): JSX.Element {
   };
 
   return (
-    <header className="bg-green-500 flex justify-between px-6 py-5 items-center">
+    <header className="bg-black flex justify-between px-6 py-5 items-center">
 
       <div className="cursor-pointer" onClick={() => navigate("/")}>
         <svg width="50px" height="50px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -32,7 +32,7 @@ export default function Header (): JSX.Element {
         </svg>
       </div>
 
-      <nav className="flex gap-5 pl-10 text-white">
+      <nav className="flex gap-5 text-white">
         <div className="cursor-pointer text-sm" onClick={() => navigate("/")}>{t("home")}</div>
         <div className="cursor-pointer text-sm">{t("blog")}</div>
         <div className="cursor-pointer text-sm">{t("contact_us")}</div>

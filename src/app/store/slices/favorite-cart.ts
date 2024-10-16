@@ -1,5 +1,6 @@
+import { myDatabaseService } from "@/app";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 import type { FavoriteProduct, Product } from "@src/shared";
 
 interface FavoriteCartState {
@@ -19,10 +20,18 @@ interface RemoveProductFromFavoriteAction {
   productId: Product["id"];
 }
 
+interface LoadFavoriteProductsAction {
+  favoriteProducts: FavoriteProduct[];
+}
+
 const favoriteCartSlice = createSlice({
   name: "favoriteCart",
   initialState,
   reducers: {
+    loadFavoritesProducts (state, action: PayloadAction<LoadFavoriteProductsAction>) {
+      const { favoriteProducts } = action.payload;
+      state.favoriteItems = favoriteProducts;
+    },
     addProductToFavorite (state, action: PayloadAction<AddProductToFavoriteAction>) {
       const { product, addedAt = Date.now() } = action.payload;
 
@@ -34,6 +43,8 @@ const favoriteCartSlice = createSlice({
       } else {
         state.favoriteItems.push({ ...product, addedAt });
       }
+      const items = current(state).favoriteItems;
+      void myDatabaseService.addItem("favorites", items);
     },
     removeProductFromFavorite (
       state,
@@ -51,12 +62,16 @@ const favoriteCartSlice = createSlice({
           (item) => item.id !== productId,
         );
       }
+      const items = current(state).favoriteItems;
+      void myDatabaseService.addItem("favorites", items);
     },
     clearFavorite (state) {
       state.favoriteItems = [];
+      const items = current(state).favoriteItems;
+      void myDatabaseService.addItem("favorites", items);
     },
   },
 });
 
-export const { addProductToFavorite, clearFavorite, removeProductFromFavorite } = favoriteCartSlice.actions;
+export const { addProductToFavorite, clearFavorite, removeProductFromFavorite, loadFavoritesProducts } = favoriteCartSlice.actions;
 export default favoriteCartSlice.reducer;

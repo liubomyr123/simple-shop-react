@@ -29,3 +29,8 @@ export { colors, sizes, categories } from "./types/Product";
 
 /** Helpers */
 export { prepareFilters } from "./helpers/prepareFilters";
+export { classNames } from "./helpers/classNames";
+export { logger } from "./helpers/logger";
+
+/** Services */
+export { IndexedDBService } from "./services/IndexedDBService";

@@ -3,12 +3,12 @@ import { addProductToCart } from "@/app/store/slices/shopping-cart";
 import type { Category, FavoriteProduct as FavoriteProductType, Product } from "@shared";
 import { webp } from "@shared";
 import { useAppDispatch, useAppSelector } from "@store";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function Favorite (): JSX.Element {
   const { favoriteItems } = useAppSelector((state) => state.favoriteCart);
 
-  console.log("favoriteItems", favoriteItems);
   return (
     <main className="flex w-10/12 m-auto flex-col p-3 py-8 min-h-screen">
       <div className="text-2xl">Favorite</div>
@@ -60,6 +60,11 @@ export function FavoriteProduct ({ product }: FavoriteProductProps): JSX.Element
     dispatch(addProductToCart({ product }));
     toast("Product added to shopping cart");
   }
+  const navigate = useNavigate();
+
+  function openProductDetails (product: Product): void {
+    navigate(`/product/${product.id}`);
+  }
   return (
     <div className="relative">
       <article className="border-gray-200 border-2 rounded-sm w-64 relative shadow-custom p-2"
@@ -68,7 +73,9 @@ export function FavoriteProduct ({ product }: FavoriteProductProps): JSX.Element
           pointerEvents: isOutOfStock ? "none" : "all",
         }}
       >
-        <figure className="flex justify-center items-center p-1">
+        <figure className="flex justify-center items-center p-1 cursor-pointer"
+          onClick={() => openProductDetails(product)}
+        >
           <img
             className="h-[250px] object-cover"
             src={imageMap[product.category]}

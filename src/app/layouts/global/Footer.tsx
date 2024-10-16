@@ -5,7 +5,7 @@ export default function Footer (): JSX.Element {
   const navigate = useTypedNavigate();
 
   return (
-    <footer className="bg-green-500 flex flex-col justify-center items-center gap-2 p-4">
+    <footer className="bg-black flex flex-col justify-center items-center gap-2 p-4">
       <div className="cursor-pointer" onClick={() => navigate("/")}>
         <svg width="50px" height="50px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path

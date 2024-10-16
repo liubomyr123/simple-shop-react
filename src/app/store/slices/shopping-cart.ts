@@ -1,4 +1,5 @@
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { myDatabaseService } from "@/app";
+import { type PayloadAction, current } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { CartProduct, Product } from "@src/shared";
 
@@ -24,10 +25,18 @@ interface UpdateQuantityAction {
   quantity: number;
 }
 
+interface LoadShoppingProductsAction {
+  cartItems: CartProduct[];
+}
+
 const shoppingCartSlice = createSlice({
   name: "shoppingCart",
   initialState,
   reducers: {
+    loadShoppingProducts (state, action: PayloadAction<LoadShoppingProductsAction>) {
+      const { cartItems } = action.payload;
+      state.cartItems = cartItems;
+    },
     addProductToCart (state, action: PayloadAction<AddProductToCartAction>) {
       const { product, quantity = 1 } = action.payload;
 
@@ -39,9 +48,9 @@ const shoppingCartSlice = createSlice({
           if (item.id === product.id) {
             return {
               ...product,
-              quantity: item.quantity + 1,
-              // selectedSize: product.sizes?.[0],
-              // selectedColor: product.colors?.[0],
+              quantity: item.quantity + quantity,
+              selectedSize: product.sizes?.[0],
+              selectedColor: product.colors?.[0],
             };
           }
           return item;
@@ -54,6 +63,8 @@ const shoppingCartSlice = createSlice({
           selectedColor: product.colors?.[0],
         });
       }
+      const items = current(state).cartItems;
+      void myDatabaseService.addItem("shopping_cart", items);
     },
     removeProductFromCart (
       state,
@@ -71,6 +82,8 @@ const shoppingCartSlice = createSlice({
           (item) => item.id !== productId,
         );
       }
+      const items = current(state).cartItems;
+      void myDatabaseService.addItem("shopping_cart", items);
     },
     updateQuantity (state, action: PayloadAction<UpdateQuantityAction>) {
       const { productId, quantity } = action.payload;
@@ -97,9 +110,13 @@ const shoppingCartSlice = createSlice({
           return item;
         });
       }
+      const items = current(state).cartItems;
+      void myDatabaseService.addItem("shopping_cart", items);
     },
     clearCart (state) {
       state.cartItems = [];
+      const items = current(state).cartItems;
+      void myDatabaseService.addItem("shopping_cart", items);
     },
   },
 });
@@ -109,5 +126,6 @@ export const {
   clearCart,
   removeProductFromCart,
   updateQuantity,
+  loadShoppingProducts,
 } = shoppingCartSlice.actions;
 export default shoppingCartSlice.reducer;

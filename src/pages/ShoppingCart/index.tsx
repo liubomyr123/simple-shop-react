@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@store";
-import type { CartProduct, Category } from "@shared";
+import type { CartProduct, Category, Product } from "@shared";
 import { useTypedNavigate, webp } from "@shared";
 import { toast } from "sonner";
 
@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { clearCart, removeProductFromCart, updateQuantity } from "@app/store/slices/shopping-cart";
+import { useNavigate } from "react-router-dom";
 
 export default function ShoppingCart (): JSX.Element {
   const { cartItems } = useAppSelector((state) => state.shoppingCart);
@@ -54,7 +55,7 @@ export default function ShoppingCart (): JSX.Element {
       subTotal += subPrice;
     }
     setSubTotal(subTotal);
-    setGrandTotal(subGrandTotal);
+    setGrandTotal(subTotal + DELIVERY_CHARGE);
   }, [cartItems]);
 
   function processedToCheckout (): void {
@@ -192,13 +193,15 @@ function CheckoutCartTable ({ cartItems }: { cartItems: CartProduct[]; }): JSX.E
   }
   function updateProductQuantity (product: CartProduct, operationType: "add" | "remove"): void {
     dispatch(updateQuantity({ productId: product.id, quantity: operationType === "add" ? 1 : -1 }));
-    // console.log("product", product);
     if (product.quantity + (operationType === "add" ? 1 : -1) === product.stock) {
       toast("Max amount for this product");
     }
   }
-  console.log("cartItems", cartItems);
+  const navigate = useNavigate();
 
+  function openProductDetails (product: Product): void {
+    navigate(`/product/${product.id}`);
+  }
   return (
     <div className="w-full relative">
 
@@ -213,61 +216,68 @@ function CheckoutCartTable ({ cartItems }: { cartItems: CartProduct[]; }): JSX.E
           </TableRow>
         </TableHeader>
         <TableBody>
-          {cartItems.map((product) => (
-            <TableRow key={product.id}>
-              <TableCell className="font-medium bg-red-00">
-                <div className="flex gap-2">
-                  <figure className="">
-                    <img
-                      src={imageMap[product.category]}
-                      alt={product.name} className="w-16 bg-green-00"
-                    />
-                  </figure>
-                  <div className="flex flex-col p-2">
-                    <div className="font-bold">
-                      {product.name}
+          {cartItems.map((product) => {
+            const discountPrice = (product.price * (100 - product.discount) / 100).toFixed(2);
+
+            return (
+              <TableRow key={product.id}>
+                <TableCell className="font-medium bg-red-00">
+                  <div className="flex gap-2">
+                    <figure className="cursor-pointer"
+                      onClick={() => openProductDetails(product)}
+                    >
+                      <img
+                        src={imageMap[product.category]}
+                        alt={product.name} className="w-16 bg-green-00"
+                      />
+                    </figure>
+                    <div className="flex flex-col p-2">
+                      <div className="font-bold">
+                        {product.name}
+                      </div>
+                      {product.selectedSize
+                        ? (
+                          <div className="font-light">
+                           Size: {product.selectedSize}
+                          </div>
+                        )
+                        : null}
+                      {product.selectedColor
+                        ? (
+                          <div className="font-light flex items-center gap-2">
+                           Color: {product.selectedColor}
+                            <div className="w-3 h-3 rounded-sm " style={{ backgroundColor: product.selectedColor, border: "1px dashed grey" }}></div>
+                          </div>
+                        )
+                        : null}
                     </div>
-                    {product.selectedSize
-                      ? (
-                        <div className="font-light">
-                        Size: {product.selectedSize}
-                        </div>
-                      )
-                      : null}
-                    {product.selectedColor
-                      ? (
-                        <div className="font-light flex items-center gap-2">
-                        Color: {product.selectedColor}
-                          <div className="w-3 h-3 rounded-sm " style={{ backgroundColor: product.selectedColor, border: "1px dashed grey" }}></div>
-                        </div>
-                      )
-                      : null}
                   </div>
-                </div>
-              </TableCell>
-              <TableCell>${product.price}</TableCell>
-              <TableCell>
-                <div className="flex border-2 bg-slate-00 border-black rounded-sm w-max p-1 px-3 gap-3 items-center">
-                  <div className="text-xl cursor-pointer" onClick={() => updateProductQuantity(product, "remove")}>
-                  -
+                </TableCell>
+                <TableCell>${discountPrice}</TableCell>
+                <TableCell>
+                  <div className="flex border-2 bg-slate-00 border-black rounded-sm w-max p-1 px-3 gap-3 items-center">
+                    <div className="text-xl cursor-pointer" onClick={() => updateProductQuantity(product, "remove")}>
+                     -
+                    </div>
+                    <div className="text-sm px-3 bg-red-00">
+                      {product.quantity}
+                    </div>
+                    <div className="text-xl cursor-pointer" onClick={() => updateProductQuantity(product, "add")}>
+                     +
+                    </div>
                   </div>
-                  <div className="text-sm px-3 bg-red-00">
-                    {product.quantity}
-                  </div>
-                  <div className="text-xl cursor-pointer" onClick={() => updateProductQuantity(product, "add")}>
-                  +
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell className="">${product.price * product.quantity}</TableCell>
-              <TableCell className="bg-red-00 flex justify-center items-center mt-3">
-                <svg onClick={() => removeFromCart(product)} className="cursor-pointer" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18 6L17.1991 18.0129C17.129 19.065 17.0939 19.5911 16.8667 19.99C16.6666 20.3412 16.3648 20.6235 16.0011 20.7998C15.588 21 15.0607 21 14.0062 21H9.99377C8.93927 21 8.41202 21 7.99889 20.7998C7.63517 20.6235 7.33339 20.3412 7.13332 19.99C6.90607 19.5911 6.871 19.065 6.80086 18.0129L6 6M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M14 10V17M10 10V17"
-                    stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+                <TableCell className="">${product.price * product.quantity}</TableCell>
+                <TableCell className="bg-red-00 flex justify-center items-center mt-3">
+                  <svg onClick={() => removeFromCart(product)} className="cursor-pointer" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L17.1991 18.0129C17.129 19.065 17.0939 19.5911 16.8667 19.99C16.6666 20.3412 16.3648 20.6235 16.0011 20.7998C15.588 21 15.0607 21 14.0062 21H9.99377C8.93927 21 8.41202 21 7.99889 20.7998C7.63517 20.6235 7.33339 20.3412 7.13332 19.99C6.90607 19.5911 6.871 19.065 6.80086 18.0129L6 6M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M14 10V17M10 10V17"
+                      stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </TableCell>
+              </TableRow>
+            );
+          },
+          )}
         </TableBody>
       </Table>
       {

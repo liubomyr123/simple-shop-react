@@ -1,6 +1,6 @@
 import { webp } from "@shared";
 import type { Category, Product } from "@shared";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -14,6 +14,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@store";
 import { addProductToCart } from "@app/store/slices/shopping-cart";
 import { addProductToFavorite, removeProductFromFavorite } from "@app/store/slices/favorite-cart";
+import { useNavigate } from "react-router-dom";
 
 interface MainFiltersProps {
   products: Product[];
@@ -37,13 +38,41 @@ function sortProductsOnStock (arr: Product[]): Product[] {
 export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Element {
   const [listFormat, setListFormat] = useState<("list" | "tabs")>("tabs");
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const sortedProducts = useMemo(() => {
-    return sortProductsOnStock(products);
-  }, [products]);
+  const [sortedProducts, setSortedProducts] = useState< Product[]>([]);
+
+  useEffect(() => {
+    setSortedProducts(sortProductsOnStock(products));
+  }, []);
 
   function handleChangeSort (sortType: string): void {
-    console.log("sortType:", sortType);
+    const sortedArray: Product[] = [];
+    const nonZeroArray: Product[] = [];
+
+    for (let i = 0; i < sortedProducts.length; i++) {
+      if (sortedProducts[i].stock === 0) {
+        sortedArray.push(sortedProducts[i]);
+      } else {
+        nonZeroArray.push(sortedProducts[i]);
+      }
+    }
+
+    if (sortType === "cheap") {
+      const sortedItems = nonZeroArray.slice().sort((a, b) => {
+        const discountPriceA = (a.price * (100 - a.discount) / 100);
+        const discountPriceB = (b.price * (100 - b.discount) / 100);
+        return discountPriceA - discountPriceB;
+      });
+      setSortedProducts(sortedItems.concat(sortedArray));
+    } else if (sortType === "expensive") {
+      const sortedItems = nonZeroArray.slice().sort((a, b) => {
+        const discountPriceA = (a.price * (100 - a.discount) / 100);
+        const discountPriceB = (b.price * (100 - b.discount) / 100);
+        return discountPriceB - discountPriceA;
+      });
+      setSortedProducts(sortedItems.concat(sortedArray));
+    }
   }
   function addToCart (product: Product): void {
     dispatch(addProductToCart({ product }));
@@ -56,6 +85,9 @@ export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Ele
   function removeFromFavorites (product: Product): void {
     dispatch(removeProductFromFavorite({ productId: product.id }));
     toast("Product removed from favorites");
+  }
+  function openProductDetails (product: Product): void {
+    navigate(`/product/${product.id}`);
   }
   return (
     <section className="w-full bg-green-0 p-3">
@@ -91,8 +123,10 @@ export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Ele
             Showing {products.length} of {products.length} results
           </div>
         </div>
-        <Select onValueChange={handleChangeSort} defaultValue={"expensive"}>
-          <SelectTrigger className="w-[120px] text-black">
+        <Select onValueChange={handleChangeSort}
+        //  defaultValue={"expensive"}
+        >
+          <SelectTrigger className="w-[140px] text-black">
             <SelectValue placeholder="Sort by price" />
           </SelectTrigger>
           <SelectContent>
@@ -111,6 +145,7 @@ export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Ele
                 addToCart={addToCart}
                 addToFavorites={addToFavorites}
                 removeFromFavorites={removeFromFavorites}
+                openProductDetails={openProductDetails}
               />
             );
           }
@@ -125,6 +160,7 @@ export default function ListOfProducts ({ products }: MainFiltersProps): JSX.Ele
                 addToCart={addToCart}
                 addToFavorites={addToFavorites}
                 removeFromFavorites={removeFromFavorites}
+                openProductDetails={openProductDetails}
               />
             );
           }
@@ -140,9 +176,10 @@ interface ProductFormatProps {
   addToCart: (product: Product) => void;
   addToFavorites: (product: Product) => void;
   removeFromFavorites: (product: Product) => void;
+  openProductDetails: (product: Product) => void;
 }
 
-export function TabFormatProduct ({ product, addToCart, addToFavorites, removeFromFavorites }: ProductFormatProps): JSX.Element {
+export function TabFormatProduct ({ product, addToCart, addToFavorites, removeFromFavorites, openProductDetails }: ProductFormatProps): JSX.Element {
   const discountPrice = (product.price * (100 - product.discount) / 100).toFixed(2);
   const imageMap: Record<Category, string> = {
     mug: webp.CoffeeMug,
@@ -168,7 +205,9 @@ export function TabFormatProduct ({ product, addToCart, addToFavorites, removeFr
           pointerEvents: product.stock === 0 ? "none" : "all",
         }}
       >
-        <figure className="flex justify-center items-center p-1">
+        <figure
+          onClick={() => openProductDetails(product)}
+          className="flex justify-center items-center p-1 bg-red-00 cursor-pointer hover:scale-110 transition-all duration-500">
           <img
             className="h-[250px] object-cover"
             src={imageMap[product.category]}
@@ -208,9 +247,9 @@ export function TabFormatProduct ({ product, addToCart, addToFavorites, removeFr
           style={{
             cursor: product.stock === 0 ? "default" : "pointer",
           }}
+          onClick={toggleFavorite}
         >
           <svg
-            onClick={toggleFavorite}
             width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path opacity={!currentFavorite ? "0" : "1"} d="M4.3314 12.0474L12 20L19.6686 12.0474C20.5211 11.1633 21 9.96429 21 8.71405C21 6.11055 18.9648 4 16.4543 4C15.2487 4 14.0925 4.49666 13.24 5.38071L12 6.66667L10.76 5.38071C9.90749 4.49666 8.75128 4 7.54569 4C5.03517 4 3 6.11055 3 8.71405C3 9.96429 3.47892 11.1633 4.3314 12.0474Z"
               fill="#000000"/>
@@ -230,7 +269,7 @@ export function TabFormatProduct ({ product, addToCart, addToFavorites, removeFr
   );
 }
 
-export function ListFormatProduct ({ product, addToFavorites, addToCart, removeFromFavorites }: ProductFormatProps): JSX.Element {
+export function ListFormatProduct ({ product, addToFavorites, addToCart, removeFromFavorites, openProductDetails }: ProductFormatProps): JSX.Element {
   const discountPrice = (product.price * (100 - product.discount) / 100).toFixed(2);
   const imageMap: Record<Category, string> = {
     mug: webp.CoffeeMug,
@@ -257,7 +296,9 @@ export function ListFormatProduct ({ product, addToFavorites, addToCart, removeF
           pointerEvents: product.stock === 0 ? "none" : "all",
         }}
       >
-        <figure className="min-h-40 flex justify-center items-center p-2 pl-3">
+        <figure
+          onClick={() => openProductDetails(product)}
+          className="min-h-40 flex justify-center items-center p-2 pl-3 cursor-pointer hover:scale-110 transition-all duration-500">
           <img
             src={imageMap[product.category]}
             alt={product.name} className="w-24"
