@@ -1,7 +1,10 @@
-import { useTypedNavigate, useTypedTranslation } from "@shared";
+import {
+  useTypedNavigate,
+  // useTypedTranslation
+} from "@shared";
 
 export default function Footer (): JSX.Element {
-  const t = useTypedTranslation();
+  // const t = useTypedTranslation();
   const navigate = useTypedNavigate();
 
   return (

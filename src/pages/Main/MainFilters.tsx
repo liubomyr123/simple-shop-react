@@ -20,7 +20,7 @@ export default function MainFilters ({ products }: MainFiltersProps): JSX.Elemen
     filterPrice,
     filterColor,
     filterSizes,
-    iconColorMap,
+    // iconColorMap,
   } = prepareFilters(products);
 
   const [priceSliderValue, setPriceSliderValue] = useState([filterPrice.slider.min, filterPrice.slider.max]);
