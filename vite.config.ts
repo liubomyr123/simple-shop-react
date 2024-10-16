@@ -22,6 +22,7 @@ const layoutsDir = resolve(appDir, "./layouts");
 export default defineConfig({
   publicDir,
   plugins: [react()],
+  base: "/shop_simulation",
   resolve: {
     alias: {
       "@": root,
