@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { StarRateV1 } from "@/components/StarRate";
 import InfoSection from "@/components/InfoSection";
-import { addProductToCart, updateQuantity } from "@/app/store/slices/shopping-cart";
+import { addProductToCart } from "@/app/store/slices/shopping-cart";
 import { toast } from "sonner";
 import { addProductToFavorite, removeProductFromFavorite } from "@/app/store/slices/favorite-cart";
 
@@ -299,7 +299,7 @@ const reviews = [
   },
 ];
 
-const Reviews = ({ product }: { product: Product; }): JSX.Element => {
+const Reviews = (): JSX.Element => {
   return (
     <div className="flex flex-col bg-blue-00 gap-2">
       {reviews.sort((a, b) => b.date - a.date).map(({ id, name, review, short_description, stars, date }) => {
@@ -411,7 +411,7 @@ export const Tabs = ({ product }: { product: Product; }): JSX.Element => {
     },
     {
       name: "Reviews",
-      content: <Reviews product={product} />,
+      content: <Reviews />,
     },
   ];
 

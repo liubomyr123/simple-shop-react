@@ -125,12 +125,12 @@ const Star = ({ isHoveringWrapper, i, isClicked, onDoubleClickHandler, iconType,
 };
 
 export const StarRateV1 = ({ countStars = 1, isChangeable = true, itemSize = 20 }: { itemSize: number; countStars: number; isChangeable: boolean; }): JSX.Element => {
-  const [countStarsTotal, setCountStars] = useState(5);
+  const [countStarsTotal] = useState(5);
   const [isClicked, setIsClicked] = useState(countStars);
   const [isHovering, setIsHovering] = useState(0);
-  const [flexDirection, setFlexDirection] = useState<React.CSSProperties["flexDirection"]>(commonFlexDirectionValues[2]);
-  const [iconType, setIconType] = useState<"heart" | "star">("star");
-  const [transition, setTransition] = useState<(AnimationProps["transition"])>({
+  const [flexDirection] = useState<React.CSSProperties["flexDirection"]>(commonFlexDirectionValues[2]);
+  const [iconType] = useState<"heart" | "star">("star");
+  const [transition] = useState<(AnimationProps["transition"])>({
     type: "spring",
     stiffness: 500,
     damping: 30,
@@ -138,7 +138,7 @@ export const StarRateV1 = ({ countStars = 1, isChangeable = true, itemSize = 20 
     mass: 0.1,
   });
   //   const [itemSize, setItemSize] = useState(10);
-  const [dotSize, setDotSize] = useState(itemSize / 4);
+  const [dotSize] = useState(itemSize / 4);
 
   return (
     <div className="flex">
