@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/app/store";
+import { type Colors, type Sizes, type Category, type Product } from "@shared";
 import { classNames, webp } from "@shared";
-import { type Category, type Product } from "@shared";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -26,6 +26,8 @@ export default function ProductDetails (): JSX.Element {
   const params = useParams<ProductParamTypes>();
   const { products } = useAppSelector((state) => state.products);
   const [product, setProduct] = useState<null | Product>(null);
+  const [selectedColor, setSelectedColor] = useState<null | Colors>(null);
+  const [selectedSize, setSelectedSize] = useState<null | Sizes>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const dispatch = useAppDispatch();
@@ -33,12 +35,13 @@ export default function ProductDetails (): JSX.Element {
 
   const { favoriteItems } = useAppSelector((state) => state.favoriteCart);
 
-
   useEffect(() => {
     const productId = params.productId;
     if (productId) {
       const product = products.find(({ id }) => id === +productId) ?? null;
       setProduct(product);
+      setSelectedColor(product?.colors?.[0] ?? null);
+      setSelectedSize(product?.sizes?.[0] ?? null);
     }
     setTimeout(() => {
       setLoading(false);
@@ -92,7 +95,12 @@ export default function ProductDetails (): JSX.Element {
         return;
       }
     }
-    dispatch(addProductToCart({ product, quantity }));
+    dispatch(addProductToCart({
+      product,
+      quantity,
+      selectedColor,
+      selectedSize,
+    }));
     toast("Product added to shopping cart");
   }
 
@@ -159,7 +167,28 @@ export default function ProductDetails (): JSX.Element {
                 <div className="flex gap-2">
                   {product.colors?.map((color) => {
                     return (
-                      <div key={color} style={{ backgroundColor: color }} className="h-8 w-8 rounded-sm cursor-pointer border-2 border-black">
+                      <div
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        style={{
+                          backgroundColor: color,
+                          // border: color === selectedColor ? "3px solid red" : "2px solid " + "black",
+                        }}
+                        className="h-8 w-8 rounded-sm cursor-pointer border-2 border-black relative border-dashed"
+                      >
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                          style={{
+                            opacity: color === selectedColor ? "1" : "0",
+                          }}
+                        >
+                          <svg width="15px" height="15px" viewBox="0 -0.5 17 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" className="si-glyph si-glyph-checked">
+                            <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                              <path d="M3.432,6.189 C3.824,5.798 4.455,5.798 4.847,6.189 L6.968,8.31 L13.147,2.131 C13.531,1.747 14.157,1.753 14.548,2.144 L16.67,4.266 C17.06,4.657 17.066,5.284 16.684,5.666 L7.662,14.687 C7.278,15.07 6.651,15.064 6.261,14.673 L1.311,9.723 C0.92,9.333 0.92,8.7 1.311,8.31 L3.432,6.189 Z"
+                                fill={color === "white" ? "#000" : "#fff"} className="si-glyph-fill">
+                              </path>
+                            </g>
+                          </svg>
+                        </div>
                       </div>
                     );
                   })}
@@ -178,7 +207,14 @@ export default function ProductDetails (): JSX.Element {
                 <div className="flex gap-2">
                   {product.sizes?.map((size) => {
                     return (
-                      <div key={size} className="h-8 w-8 rounded-sm bg-black text-white flex justify-center items-center cursor-pointer border-2 border-black">
+                      <div key={size}
+                        style={{
+                          backgroundColor: size === selectedSize ? "black" : "white",
+                          color: size === selectedSize ? "white" : "black",
+                        }}
+                        onClick={() => setSelectedSize(size)}
+                        className="h-8 w-8 rounded-sm bg- text- flex justify-center items-center cursor-pointer border-2 border-black"
+                      >
                         {size}
                       </div>
                     );

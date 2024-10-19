@@ -1,7 +1,7 @@
 import { myDatabaseService } from "@/app";
 import { type PayloadAction, current } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import type { CartProduct, Product } from "@src/shared";
+import type { CartProduct, Colors, Product, Sizes } from "@src/shared";
 
 interface ShoppingCartState {
   cartItems: CartProduct[];
@@ -14,15 +14,19 @@ const initialState: ShoppingCartState = {
 interface AddProductToCartAction {
   product: Product;
   quantity?: number;
+  selectedColor?: Colors | null;
+  selectedSize?: Sizes | null;
 }
 
 interface RemoveProductFromCartAction {
   productId: Product["id"];
+  product: CartProduct;
 }
 
 interface UpdateQuantityAction {
   productId: Product["id"];
   quantity: number;
+  product: CartProduct;
 }
 
 interface LoadShoppingProductsAction {
@@ -38,20 +42,55 @@ const shoppingCartSlice = createSlice({
       state.cartItems = cartItems;
     },
     addProductToCart (state, action: PayloadAction<AddProductToCartAction>) {
-      const { product, quantity = 1 } = action.payload;
+      const { product, quantity = 1, selectedSize, selectedColor } = action.payload;
 
       const existingItem = state.cartItems.find(
-        (item) => item.id === product.id,
+        (item) => {
+          if (item.id === product.id) {
+            if (
+              item?.selectedColor &&
+              item.selectedColor === selectedColor &&
+              item?.selectedSize &&
+              item.selectedSize === selectedSize
+            ) {
+              return true;
+            }
+            if (
+              item?.selectedColor &&
+              item.selectedColor === selectedColor &&
+              !item?.selectedSize
+            ) {
+              return true;
+            }
+            if (
+              item?.selectedSize &&
+              item.selectedSize === selectedSize &&
+              !item?.selectedColor
+            ) {
+              return true;
+            }
+          }
+          return false;
+        },
       );
       if (existingItem) {
         state.cartItems = state.cartItems.map((item) => {
           if (item.id === product.id) {
-            return {
-              ...product,
-              quantity: item.quantity + quantity,
-              selectedSize: product.sizes?.[0],
-              selectedColor: product.colors?.[0],
-            };
+            if ((
+              item?.selectedColor && item.selectedColor === selectedColor &&
+              item?.selectedSize && item.selectedSize === selectedSize
+            ) || (
+              item?.selectedColor && item.selectedColor === selectedColor && !item?.selectedSize
+            ) || (
+              item?.selectedSize && item.selectedSize === selectedSize && !item?.selectedColor
+            )) {
+              return {
+                ...product,
+                quantity: item.quantity + quantity,
+                selectedSize: selectedSize ?? product.sizes?.[0],
+                selectedColor: selectedColor ?? product.colors?.[0],
+              };
+            }
           }
           return item;
         });
@@ -59,8 +98,8 @@ const shoppingCartSlice = createSlice({
         state.cartItems.push({
           ...product,
           quantity,
-          selectedSize: product.sizes?.[0],
-          selectedColor: product.colors?.[0],
+          selectedSize: selectedSize ?? product.sizes?.[0],
+          selectedColor: selectedColor ?? product.colors?.[0],
         });
       }
       const items = current(state).cartItems;
@@ -70,27 +109,93 @@ const shoppingCartSlice = createSlice({
       state,
       action: PayloadAction<RemoveProductFromCartAction>,
     ) {
-      const { productId } = action.payload;
+      const { productId, product } = action.payload;
 
       const existingItem = state.cartItems.find(
-        (item) => item.id === productId,
+        (item) => {
+          if (item.id === product.id) {
+            if (
+              item?.selectedColor &&
+              item.selectedColor === product.selectedColor &&
+              item?.selectedSize &&
+              item.selectedSize === product.selectedSize
+            ) {
+              return true;
+            }
+            if (
+              item?.selectedColor &&
+              item.selectedColor === product.selectedColor &&
+              !item?.selectedSize
+            ) {
+              return true;
+            }
+            if (
+              item?.selectedSize &&
+              item.selectedSize === product.selectedSize &&
+              !item?.selectedColor
+            ) {
+              return true;
+            }
+          }
+          return false;
+        },
       );
       if (!existingItem) {
         // skip
       } else {
-        state.cartItems = state.cartItems.filter(
-          (item) => item.id !== productId,
-        );
+        const newCartItems: CartProduct[] = [];
+        for (const item of state.cartItems) {
+          if (item.id === productId) {
+            if (
+              item?.selectedColor &&
+              item.selectedColor !== existingItem.selectedColor ||
+              item?.selectedSize &&
+              item.selectedSize !== existingItem.selectedSize
+            ) {
+              newCartItems.push(item);
+            }
+          } else {
+            newCartItems.push(item);
+          }
+        }
+        state.cartItems = newCartItems;
       }
       const items = current(state).cartItems;
       void myDatabaseService.addItem("shopping_cart", items);
     },
     updateQuantity (state, action: PayloadAction<UpdateQuantityAction>) {
-      const { productId, quantity } = action.payload;
+      const { productId, quantity, product } = action.payload;
 
       const existingItem = state.cartItems.find(
-        (item) => item.id === productId,
+        (item) => {
+          if (item.id === product.id) {
+            if (
+              item?.selectedColor &&
+              item.selectedColor === product.selectedColor &&
+              item?.selectedSize &&
+              item.selectedSize === product.selectedSize
+            ) {
+              return true;
+            }
+            if (
+              item?.selectedColor &&
+              item.selectedColor === product.selectedColor &&
+              !item?.selectedSize
+            ) {
+              return true;
+            }
+            if (
+              item?.selectedSize &&
+              item.selectedSize === product.selectedSize &&
+              !item?.selectedColor
+            ) {
+              return true;
+            }
+          }
+          return false;
+        },
       );
+
       if (!existingItem) {
         // skip
       } else {
@@ -102,10 +207,19 @@ const shoppingCartSlice = createSlice({
         }
         state.cartItems = state.cartItems.map((item) => {
           if (item.id === productId) {
-            return {
-              ...item,
-              quantity: item.quantity + quantity,
-            };
+            if ((
+              item?.selectedColor && item.selectedColor === product.selectedColor &&
+              item?.selectedSize && item.selectedSize === product.selectedSize
+            ) || (
+              item?.selectedColor && item.selectedColor === product.selectedColor && !item?.selectedSize
+            ) || (
+              item?.selectedSize && item.selectedSize === product.selectedSize && !item?.selectedColor
+            )) {
+              return {
+                ...item,
+                quantity: item.quantity + quantity,
+              };
+            }
           }
           return item;
         });

@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "@store";
 import type { CartProduct, Category, Product } from "@shared";
 import { useTypedNavigate, webp } from "@shared";
 import { toast } from "sonner";
+import { nanoid } from "@reduxjs/toolkit";
 
 import {
   Dialog,
@@ -189,10 +190,10 @@ function CheckoutCartTable ({ cartItems }: { cartItems: CartProduct[]; }): JSX.E
   const dispatch = useAppDispatch();
 
   function removeFromCart (product: CartProduct): void {
-    dispatch(removeProductFromCart({ productId: product.id }));
+    dispatch(removeProductFromCart({ productId: product.id, product }));
   }
   function updateProductQuantity (product: CartProduct, operationType: "add" | "remove"): void {
-    dispatch(updateQuantity({ productId: product.id, quantity: operationType === "add" ? 1 : -1 }));
+    dispatch(updateQuantity({ product, productId: product.id, quantity: operationType === "add" ? 1 : -1 }));
     if (product.quantity + (operationType === "add" ? 1 : -1) === product.stock) {
       toast("Max amount for this product");
     }
@@ -220,7 +221,7 @@ function CheckoutCartTable ({ cartItems }: { cartItems: CartProduct[]; }): JSX.E
             const discountPrice = (product.price * (100 - product.discount) / 100).toFixed(2);
 
             return (
-              <TableRow key={product.id}>
+              <TableRow key={nanoid()}>
                 <TableCell className="font-medium bg-red-00">
                   <div className="flex gap-2">
                     <figure className="cursor-pointer"
