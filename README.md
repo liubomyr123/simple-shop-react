@@ -10,7 +10,7 @@
 
 ```bash
 # open folder with project
-cd gift-hub-frontend
+cd simple-shop-react
 
 # install
 $ yarn
